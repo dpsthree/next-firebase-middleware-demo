@@ -1,6 +1,7 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { User } from './functions/src/models/user';
 
 // Must keep this simple as it is not Node based:
 // https://nextjs.org/docs/api-reference/edge-runtime
@@ -14,11 +15,12 @@ export async function middleware(req: NextRequest) {
     if (typeof token !== 'string') {
       return NextResponse.redirect(new URL('/404', req.url));
     } else {
-      var url = new URL(helloWorldURL);
-      url.searchParams.append('token', '12345');
-
-      const results = await (await fetch(url)).json();
-      console.log(results);
+      const user = await getUser(token);
+      if (userCanAccess(user)) {
+        return NextResponse.next();
+      } else {
+        return NextResponse.redirect(new URL('/login', req.url));
+      }
     }
   } catch (e) {
     console.log(e);
@@ -28,7 +30,16 @@ export async function middleware(req: NextRequest) {
   // Now that there is a user determine if they have access to the system
   // If they don't, redirect them to the subscription page
   // If so, continue
-  return NextResponse.redirect(new URL('/login', req.url));
+}
+
+function userCanAccess(user: User) {
+  return user.canAccess;
+}
+
+async function getUser(id: string) {
+  var url = new URL(helloWorldURL);
+  url.searchParams.append('token', id);
+  return (await (await fetch(url)).json()) as User;
 }
 
 // See "Matching Paths" below to learn more

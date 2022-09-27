@@ -27,6 +27,7 @@ async function createUserIfNotExists(user: string): Promise<User> {
     } else {
       const newUser: User = {
         id: user,
+        canAccess: user === '12345',
       };
       await admin.firestore().doc(`/${USER_PATH}/${newUser.id}`).set(newUser);
       return newUser;
