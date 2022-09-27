@@ -8,13 +8,18 @@ import type { NextRequest } from 'next/server';
 const helloWorldURL =
   'http://localhost:5001/next-middleware-demo/us-central1/helloWorld';
 
-export async function middleware(request: NextRequest) {
+export async function middleware(req: NextRequest) {
   try {
-    var url = new URL(helloWorldURL);
-    url.searchParams.append('token', '12345');
+    const token = req.nextUrl.searchParams.get('token');
+    if (typeof token !== 'string') {
+      return NextResponse.redirect(new URL('/404', req.url));
+    } else {
+      var url = new URL(helloWorldURL);
+      url.searchParams.append('token', '12345');
 
-    const results = await (await fetch(url)).json();
-    console.log(results);
+      const results = await (await fetch(url)).json();
+      console.log(results);
+    }
   } catch (e) {
     console.log(e);
   }
@@ -23,7 +28,7 @@ export async function middleware(request: NextRequest) {
   // Now that there is a user determine if they have access to the system
   // If they don't, redirect them to the subscription page
   // If so, continue
-  return NextResponse.redirect(new URL('/login', request.url));
+  return NextResponse.redirect(new URL('/login', req.url));
 }
 
 // See "Matching Paths" below to learn more
