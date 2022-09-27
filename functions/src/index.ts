@@ -4,6 +4,7 @@ import * as functions from 'firebase-functions';
 // // https://firebase.google.com/docs/functions/typescript
 //
 export const helloWorld = functions.https.onRequest((request, response) => {
+  const token = request.query.token;
   functions.logger.info('Hello logs!', { structuredData: true });
-  response.send({msg: 'Hello from Firebase!'});
+  response.send({ msg: 'Hello from Firebase!', token });
 });
