@@ -8,13 +8,11 @@ import type { NextRequest } from 'next/server';
 const helloWorldURL =
   'http://localhost:5001/next-middleware-demo/us-central1/helloWorld';
 
-
-
 export async function middleware(request: NextRequest) {
   try {
     var url = new URL(helloWorldURL);
-     url.searchParams.append('token', '12345');
-    
+    url.searchParams.append('token', '12345');
+
     const results = await (await fetch(url)).json();
     console.log(results);
   } catch (e) {
