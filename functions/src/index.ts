@@ -7,16 +7,17 @@ import { User } from './models/user';
 
 const app = require('next')({
   dir: '../',
-  dev: true,
   port: 5000,
   hostname: 'localhost',
 });
 const handle = app.getRequestHandler();
+const prepared = app.prepare();
 export const server = onRequest((request, response) => {
   console.log(
-    'firebase function received the request about to pass it to next'
+    'firebase function received the request about to pass it to next',
+    request.originalUrl
   );
-  return app.prepare().then(() => {
+  return prepared.then(() => {
     console.log('app is prepared')
     return handle(request, response);
   });
