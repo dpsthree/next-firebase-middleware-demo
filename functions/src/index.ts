@@ -1,11 +1,28 @@
 import * as functions from 'firebase-functions';
+import { onRequest } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
 import { connectFirebaseAdminTools } from './firebase-admin-tools';
 import { User } from './models/user';
 
-const USER_PATH = 'users';
+const app = require('next')({
+  dir: '../',
+  dev: true,
+  port: 5000,
+  hostname: 'localhost',
+});
+const handle = app.getRequestHandler();
+export const server = onRequest((request, response) => {
+  console.log(
+    'firebase function received the request about to pass it to next'
+  );
+  return app.prepare().then(() => {
+    console.log('app is prepared')
+    return handle(request, response);
+  });
+});
 
+const USER_PATH = 'users';
 export const helloWorld = functions.https.onRequest(
   async (request, response) => {
     connectFirebaseAdminTools();

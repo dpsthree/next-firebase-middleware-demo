@@ -9,21 +9,30 @@ import { User } from './functions/src/models/user';
 const helloWorldURL =
   'http://localhost:5001/next-middleware-demo/us-central1/helloWorld';
 
-export async function middleware(req: NextRequest, res: NextResponse) {
+export async function middleware(req: NextRequest) {
+  const { pathname, origin } = req.nextUrl;
+  console.log('New request being processed by middleware: ', req.nextUrl);
   try {
     const token = req.nextUrl.searchParams.get('token');
     if (typeof token !== 'string') {
-      return NextResponse.redirect(new URL('/404', req.url));
+      const redirectURL = new URL(`${origin}/404`);
+      console.log('bad request, redirecting', `${origin}/404`);
+      return NextResponse.redirect(redirectURL);
     } else {
       const user = await getUser(token);
       if (userCanAccess(user)) {
+        console.log('user can access, passing through');
         return NextResponse.next();
       } else {
-        return NextResponse.redirect(new URL('/login', req.url));
+        const redirectURL = new URL(`${origin}/login`);
+        console.log('user cannot access, redirecting', `${origin}/login`);
+        return NextResponse.redirect(redirectURL);
       }
     }
   } catch (e) {
-    return NextResponse.rewrite(new URL('/error', req.url));
+    const redirectURL = new URL(`${origin}/error`);
+    console.log('internal request error', `${origin}/error`);
+    return NextResponse.rewrite(redirectURL);
   }
   // Find out if the user exists
   // If not, create them

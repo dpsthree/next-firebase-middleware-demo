@@ -9,6 +9,15 @@
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ]
   },
+  "hosting": {
+    "public": "public",
+    "rewrites": [
+      {
+        "source": "**/**",
+        "function": "server"
+      }
+    ]
+  },
   "emulators": {
     "auth": {
       "port": 9099
