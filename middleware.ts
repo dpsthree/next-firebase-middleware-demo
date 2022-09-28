@@ -9,7 +9,7 @@ import { User } from './functions/src/models/user';
 const helloWorldURL =
   'http://localhost:5001/next-middleware-demo/us-central1/helloWorld';
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest, res: NextResponse) {
   try {
     const token = req.nextUrl.searchParams.get('token');
     if (typeof token !== 'string') {
@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
       }
     }
   } catch (e) {
-    console.log(e);
+    return NextResponse.rewrite(new URL('/error', req.url));
   }
   // Find out if the user exists
   // If not, create them
